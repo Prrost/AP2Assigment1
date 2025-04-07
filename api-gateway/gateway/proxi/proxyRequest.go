@@ -19,6 +19,10 @@ func ProxiRequest(targetURL string, c *gin.Context) {
 		return
 	}
 
+	if rawQuery := c.Request.URL.RawQuery; rawQuery != "" {
+		fullUrl += "?" + rawQuery
+	}
+
 	req, err := http.NewRequest(c.Request.Method, fullUrl, c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, Response.Err{Error: fmt.Sprintf("%s: %s", op, err.Error())})
