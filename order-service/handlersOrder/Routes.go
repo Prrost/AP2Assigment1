@@ -128,14 +128,14 @@ func GetOrderByID(c *gin.Context, storage Storage.Storage) {
 		return
 	}
 
-	if CheckProductExists(id, c) == false {
-		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "product doesn't exist"})
-		return
-	}
-
 	order, err := storage.GetOrderByIDX(id)
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if CheckProductExists(order.ProductID, c) == false {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"error": "product doesn't exist"})
 		return
 	}
 
@@ -283,6 +283,23 @@ func CheckUserExists(userId int, c *gin.Context) bool {
 }
 
 func CheckProductExists(productId int, c *gin.Context) bool {
+	url := fmt.Sprintf("http://localhost:8081/products/%d", productId)
+	client := http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Get(url)
+	if err != nil {
+		slog.Error("failed to contact inventory service", err)
+		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": "failed to contact inventory service"})
+		return false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode == http.StatusNotFound {
+		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "product does not exist"})
+		return false
+	}
+	if resp.StatusCode != http.StatusOK {
+		c.IndentedJSON(resp.StatusCode, gin.H{"error": "failed to fetch product"})
+		return false
+	}
 	return true
 }
 
