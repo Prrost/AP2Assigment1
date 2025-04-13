@@ -1,8 +1,9 @@
 package Storage
 
-import "api-gateway/domain"
+import "user-service/domain"
 
-type Repo interface {
+type Storage interface {
 	CreateUser(user domain.User) (domain.User, error)
 	GetUserByEmail(email string) (domain.User, error)
+	GetUserByID(id int) (domain.User, error)
 }

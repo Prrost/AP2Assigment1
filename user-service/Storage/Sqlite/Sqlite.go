@@ -1,12 +1,12 @@
 package Sqlite
 
 import (
-	"api-gateway/config"
-	"api-gateway/domain"
 	"database/sql"
 	"errors"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
+	"user-service/config"
+	"user-service/domain"
 )
 
 type SqliteStorage struct {
@@ -92,4 +92,21 @@ func (s *SqliteStorage) IsUserExists(email string) (bool, error) {
 		return false, err
 	}
 	return true, nil
+}
+
+func (s *SqliteStorage) GetUserByID(id int) (domain.User, error) {
+	stmt, err := s.db.Prepare(`SELECT id, email FROM users WHERE id = ?`)
+	if err != nil {
+		return domain.User{}, err
+	}
+	defer stmt.Close()
+
+	var user domain.User
+
+	err = stmt.QueryRow(id).Scan(&user.ID, &user.Email)
+	if err != nil {
+		return domain.User{}, err
+	}
+
+	return user, nil
 }

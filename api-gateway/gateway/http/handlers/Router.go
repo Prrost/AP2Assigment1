@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"api-gateway/Storage"
 	"api-gateway/config"
+	"api-gateway/gateway/grpc/clients"
 	"api-gateway/gateway/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(cfg *config.Config, storage Storage.Repo) *gin.Engine {
+func SetupRouter(cfg *config.Config, grpcClient *clients.Client) *gin.Engine {
 	router := gin.Default()
 
 	productsGroup := router.Group("/products")
@@ -17,7 +17,7 @@ func SetupRouter(cfg *config.Config, storage Storage.Repo) *gin.Engine {
 	productsGroup.Use(middleware.AuthMiddleware(cfg))
 	ordersGroup.Use(middleware.AuthMiddleware(cfg))
 
-	SetupAuth(authGroup, cfg, storage)
+	SetupAuth(authGroup, grpcClient)
 	SetupOrders(ordersGroup, cfg)
 	SetupProducts(productsGroup, cfg)
 
