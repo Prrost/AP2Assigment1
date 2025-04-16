@@ -3,7 +3,8 @@ package main
 import (
 	"inventory-service/Storage"
 	"inventory-service/config"
-	"inventory-service/handlersInv"
+	"inventory-service/grpc/server"
+	"inventory-service/useCase"
 )
 
 func main() {
@@ -11,10 +12,7 @@ func main() {
 
 	db := Storage.NewSqliteStorage(cfg)
 
-	router := handlersInv.SetupRouter(cfg, db)
+	UseCase := useCase.NewUseCase(db, cfg)
 
-	err := router.Run(cfg.Port)
-	if err != nil {
-		panic(err)
-	}
+	server.RunGRPCServer(cfg, UseCase)
 }

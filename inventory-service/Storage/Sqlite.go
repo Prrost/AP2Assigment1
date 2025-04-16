@@ -112,7 +112,6 @@ func (s SqliteStorage) DeleteObjectByID(id int) (domain.Object, error) {
 	if err != nil {
 		return domain.Object{}, err
 	}
-
 	return object, nil
 }
 

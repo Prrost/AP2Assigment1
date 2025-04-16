@@ -20,6 +20,10 @@ func SetupAuth(group *gin.RouterGroup, grpcClient *clients.Client) {
 	group.POST("/login", func(c *gin.Context) {
 		LoginUser(c, grpcClient)
 	})
+
+	group.GET("/profile/:id", func(c *gin.Context) {
+		GetProfile(c, grpcClient)
+	})
 }
 
 func RegisterUser(c *gin.Context, grpcClient *clients.Client) {
@@ -96,4 +100,33 @@ func LoginUser(c *gin.Context, grpcClient *clients.Client) {
 		"token": res.GetToken(),
 	})
 
+}
+
+func GetProfile(c *gin.Context, grpcClient *clients.Client) {
+	id := c.Param("id")
+
+	res, err := grpcClient.UserClient.GetUserProfile(c.Request.Context(), &userpb.UserID{
+		Id: id,
+	})
+	if err != nil {
+		st, ok := status.FromError(err)
+		if ok {
+			switch st.Code() {
+			case codes.InvalidArgument:
+				c.IndentedJSON(http.StatusBadRequest, Response.Err{Error: st.Message()})
+			case codes.Internal:
+				c.IndentedJSON(http.StatusInternalServerError, Response.Err{Error: st.Message()})
+			case codes.NotFound:
+				c.IndentedJSON(http.StatusNotFound, Response.Err{Error: st.Message()})
+			}
+		} else {
+			c.IndentedJSON(http.StatusInternalServerError, Response.Err{Error: err.Error()})
+		}
+		return
+	}
+
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"id":    res.GetId(),
+		"email": res.GetEmail(),
+	})
 }

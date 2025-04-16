@@ -7,6 +7,7 @@ import (
 	"net"
 	"user-service/config"
 	"user-service/internal/handlers"
+	"user-service/internal/middleware"
 	"user-service/useCase"
 )
 
@@ -16,12 +17,14 @@ func RunGRPCServer(cfg *config.Config, uc *useCase.UseCase) {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(middleware.LoggingInterceptor))
+
 	userServer := handlers.NewUserServer(cfg, uc)
 
 	userpb.RegisterUserServiceServer(grpcServer, userServer)
 
-	log.Println("gRPC server listening on " + cfg.Port)
+	log.Printf("gRPC server listening on %s\n", cfg.Port)
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatalf("error on server start: %v", err)
 	}
