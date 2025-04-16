@@ -49,7 +49,7 @@ func (i *InventoryServer) GetProductById(ctx context.Context, req *inventorypb.G
 
 	return &inventorypb.GetByIdResponse{
 		Product: mapping.ToProtoProduct(object),
-		Message: "User retrieved successfully",
+		Message: "Object retrieved successfully",
 	}, nil
 }
 

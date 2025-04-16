@@ -41,7 +41,6 @@ func RegisterUser(c *gin.Context, grpcClient *clients.Client) {
 		Email:    userInput.Email,
 		Password: userInput.Password,
 	})
-
 	if err != nil {
 		st, ok := status.FromError(err)
 		if ok {

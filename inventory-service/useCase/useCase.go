@@ -140,6 +140,8 @@ func (u *UseCase) UpdateProductById(toUpdateObject domain.Object) (domain.Object
 	case toUpdateObject.Amount == -1:
 		object.Amount = 0
 		object.Available = false
+	case toUpdateObject.Amount == 0:
+		break
 	case toUpdateObject.Amount > 0:
 		object.Amount = toUpdateObject.Amount
 		object.Available = true

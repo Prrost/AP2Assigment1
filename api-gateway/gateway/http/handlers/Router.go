@@ -19,7 +19,7 @@ func SetupRouter(cfg *config.Config, grpcClient *clients.Client) *gin.Engine {
 
 	SetupAuth(authGroup, grpcClient)
 	SetupOrders(ordersGroup, cfg)
-	SetupProducts(productsGroup, cfg)
+	SetupProducts(productsGroup, grpcClient)
 
 	return router
 }
