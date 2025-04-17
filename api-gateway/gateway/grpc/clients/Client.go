@@ -2,6 +2,7 @@ package clients
 
 import (
 	"api-gateway/config"
+	"api-gateway/orderpb"
 	"context"
 	"fmt"
 	inventorypb "github.com/Prrost/assignment1proto/proto/inventory"
@@ -12,6 +13,7 @@ import (
 type Client struct {
 	UserClient      userpb.UserServiceClient
 	InventoryClient inventorypb.InventoryServiceClient
+	OrderClient     orderpb.OrderServiceClient
 }
 
 func NewMainClient(ctx context.Context, cfg *config.Config) (*Client, []error) {
@@ -30,8 +32,15 @@ func NewMainClient(ctx context.Context, cfg *config.Config) (*Client, []error) {
 		errArr = append(errArr, fmt.Errorf("InitInventoryClient error: %w", err))
 	}
 
+	orderClient, err := InitOrderClient(ctx, cfg)
+	if err != nil {
+		log.Printf("%s: gRPC order client error: %s", op, err)
+		errArr = append(errArr, fmt.Errorf("InitOrderClient error: %w", err))
+	}
+
 	return &Client{
 		UserClient:      userClient,
 		InventoryClient: inventoryClient,
+		OrderClient:     orderClient,
 	}, errArr
 }

@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package order;
+option go_package="../orderpb;orderpb";
+
+service OrderService {
+  rpc CreateOrder (CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder (GetOrderRequest) returns (GetOrderResponse);
+  rpc UpdateOrder (UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc ListAllOrders (ListAllOrdersRequest) returns (ListAllOrdersResponse);
+}
+
+
+message CreateOrderRequest {
+  int32 ProductId = 1;
+  int32 UserId = 2;
+  int64 Amount = 3;
+}
+message CreateOrderResponse {
+  string message = 1;
+  Order order = 2;  
+}
+
+
+message GetOrderRequest {
+  int32 OrderId = 1;
+}
+message GetOrderResponse {
+  string message = 1;
+  Order order = 2;
+}
+
+
+message UpdateOrderRequest {
+  int32 OrderId = 1;
+  int32 ProductId = 2;
+  int64 Amount = 3;
+  string Status = 4;
+}
+message UpdateOrderResponse {
+  string message = 1;
+  Order order = 2;  
+}
+
+
+message ListAllOrdersRequest {
+}
+message ListAllOrdersResponse {
+  repeated Order orders = 1;
+}
+
+
+message Order {
+  int32 OrderId = 1;
+  int32 ProductId = 2;
+  int32 UserId = 3;
+  int64 Amount = 4;
+  string Status = 5;
+}

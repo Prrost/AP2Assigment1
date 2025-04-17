@@ -34,6 +34,7 @@ func (s *OrderServiceServer) CreateOrder(ctx context.Context, req *orderpb.Creat
 	if err != nil {
 		return nil, status.Error(codes.Internal, "error getting product amount")
 	}
+	log.Println("1:", availableAmount, "2:", order.Amount)
 
 	if availableAmount < order.Amount {
 		return nil, status.Error(codes.InvalidArgument, "not enough amount in inventory")
