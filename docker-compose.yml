@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - inventory
+      - order
+      - user
+
+
+  inventory:
+    build:
+      context: ./inventory-service
+    container_name: inventory
+    ports:
+      - "8081:8081"
+    volumes:
+      - inventory-db:/root/DBDirectory
+
+
+  order:
+    build:
+      context: ./order-service
+    container_name: order
+    ports:
+      - "8082:8082"
+    depends_on:
+      - inventory
+    volumes:
+      - order-db:/root/DBDirectory
+
+
+  user:
+    build:
+      context: ./user-service
+    container_name: user
+    ports:
+      - "8083:8083"
+    volumes:
+      - user-db:/root/DBDirectory
+
+
+
+volumes:
+  user-db:
+  order-db:
+  inventory-db:

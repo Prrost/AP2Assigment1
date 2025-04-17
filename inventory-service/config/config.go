@@ -21,8 +21,7 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		Port:         os.Getenv("PORT"),
-		OrderService: os.Getenv("ORDER_SERVICE"),
-		DBPath:       os.Getenv("DB_PATH"),
+		Port:   os.Getenv("PORT"),
+		DBPath: os.Getenv("DB_PATH"),
 	}
 }

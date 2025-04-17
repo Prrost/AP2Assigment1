@@ -3,6 +3,7 @@ package Storage
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"order-service/config"
@@ -79,6 +80,7 @@ func (s SqliteStorage) UpdateOrderByIDX(id int, object domain.Order) (domain.Ord
 func (s SqliteStorage) GetOrderByIDX(id int) (domain.Order, error) {
 	var object domain.Order
 
+	fmt.Println("id:", id)
 	err := s.db.QueryRow(`SELECT * FROM orders WHERE id = ?`, id).Scan(&object.ID, &object.UserID, &object.ProductID, &object.Amount, &object.Status)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

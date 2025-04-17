@@ -20,9 +20,19 @@ func LoadConfig() *Config {
 		log.Fatalf("Error loading .env file: %s" + err.Error())
 	}
 
-	return &Config{
-		Port:             os.Getenv("PORT"),
-		InventoryService: os.Getenv("INVENTORY_SERVICE"),
-		DBPath:           os.Getenv("DB_PATH"),
+	if os.Getenv("ENV") == "doc" {
+		log.Println("Running in docker")
+		return &Config{
+			Port:             os.Getenv("PORT"),
+			InventoryService: os.Getenv("DOCKER_INVENTORY_SERVICE"),
+			DBPath:           os.Getenv("DB_PATH"),
+		}
+	} else {
+		return &Config{
+			Port:             os.Getenv("PORT"),
+			InventoryService: os.Getenv("INVENTORY_SERVICE"),
+			DBPath:           os.Getenv("DB_PATH"),
+		}
 	}
+
 }

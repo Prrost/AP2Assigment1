@@ -95,19 +95,19 @@ func (s *OrderServiceServer) UpdateOrder(ctx context.Context, req *orderpb.Updat
 	}
 
 	// Получаем текущий объем доступного продукта
-	availableAmount, err := CheckProductAmount(int(req.ProductId), s.InvClient)
+	availableAmount, err := CheckProductAmount(order.ProductID, s.InvClient)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "error getting product amount")
 	}
 
 	// Проверяем, хватает ли доступного товара
-	if req.Amount > availableAmount {
+	log.Println("av:", availableAmount+tempAmount, "req:", req.Amount)
+	if req.Amount > availableAmount+tempAmount {
 		return nil, status.Error(codes.InvalidArgument, "not enough product amount in inventory")
 	}
 
 	// Подготовка обновленных данных заказа
 	order.UserID = int(req.OrderId)
-	order.ProductID = int(req.ProductId)
 	order.Amount = req.Amount
 	order.Status = req.Status
 
@@ -188,11 +188,16 @@ func CheckProductAmount(productId int, InvClient inventorypb.InventoryServiceCli
 func ProductChange(amount int64, productId int, inStorage int64, InvClient inventorypb.InventoryServiceClient) error {
 	const op = "ProductChange"
 
+	newAmount := inStorage - amount
+	if newAmount == 0 {
+		newAmount = -1
+	}
+
 	ctx := context.Background()
 	_, err := InvClient.UpdateProduct(ctx, &inventorypb.UpdateRequest{
 		Id:     int64(productId),
 		Name:   "",
-		Amount: inStorage - amount,
+		Amount: newAmount,
 	})
 	if err != nil {
 		st, ok := status.FromError(err)

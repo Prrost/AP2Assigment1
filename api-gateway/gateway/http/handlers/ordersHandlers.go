@@ -132,13 +132,13 @@ func UpdateOrder(c *gin.Context, client *clients.Client) {
 	order.OrderID = int32(id)
 
 	res, err := client.OrderClient.UpdateOrder(c.Request.Context(), &orderpb.UpdateOrderRequest{
-		OrderId:   order.OrderID,
-		ProductId: order.ProductID,
-		Amount:    order.Amount,
-		Status:    order.Status,
+		OrderId: order.OrderID,
+		Amount:  order.Amount,
+		Status:  order.Status,
 	})
 	if err != nil {
 		c.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.IndentedJSON(http.StatusOK, gin.H{
